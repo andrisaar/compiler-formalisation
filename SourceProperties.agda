@@ -9,13 +9,13 @@ open import Data.Nat
 open import Source
 
 
-nonsense : ∀{n'}{Γ' : Ctx n'}{n}{Γ : Ctx n}{m}{Δ : FCtx m}{args : ExpList Γ Δ Γ'}{E : FunE Γ Δ Γ'}{φ}{e : Exp Γ Δ φ} →  args values → args ≡′ E [ e ] → e redex → {A : Set}{a b : A} → a == b
+nonsense : ∀{Γ Δ Γ'}{args : ExpList Γ Δ Γ'}{E : FunE Γ Δ Γ'}{φ}{e : Exp Γ Δ φ} →  args values → args ≡′ E [ e ] → e redex → {A : Set}{a b : A} → a == b
 nonsense []-values         ()             _
 nonsense (∷-values _ _ _) (exp-≡′ exp-≡) ()
 nonsense (∷-values _ _ α) (val-≡′ β)     γ  = nonsense α β γ
 
 mutual
-  unique-arg-ctx : ∀{n m n' φ}{Γ : Ctx n}{Δ : FCtx m}{Γ' : Ctx n'}{E E' : FunE Γ Δ Γ'}{e e' : Exp Γ Δ φ}{args : ExpList Γ Δ Γ'} → e redex → e' redex → args ≡′ E [ e ] → args ≡′ E' [ e' ] → E == E' × e == e'
+  unique-arg-ctx : ∀{Γ Δ Γ' φ}{E E' : FunE Γ Δ Γ'}{e e' : Exp Γ Δ φ}{args : ExpList Γ Δ Γ'} → e redex → e' redex → args ≡′ E [ e ] → args ≡′ E' [ e' ] → E == E' × e == e'
   unique-arg-ctx p₁ p₂ (exp-≡′ q₁) (exp-≡′ q₂) with unique-ctx p₁ p₂ q₁ q₂
   ... | refl , refl = refl , refl
   unique-arg-ctx () p₂ (exp-≡′ exp-≡) (val-≡′ q₂)
@@ -23,7 +23,7 @@ mutual
   unique-arg-ctx p₁ p₂ (val-≡′ q₁) (val-≡′ q₂) with unique-arg-ctx p₁ p₂ q₁ q₂
   ... | refl , refl = refl , refl
 
-  unique-ctx : ∀{n m τ φ}{Γ : Ctx n}{Δ : FCtx m}{E E' : E Γ Δ φ τ}{e e' : Exp Γ Δ φ}{e₀ : Exp Γ Δ τ} → e redex → e' redex → e₀ ≡ E [ e ] → e₀ ≡ E' [ e' ] → E == E' × e == e'
+  unique-ctx : ∀{Γ Δ φ τ}{E E' : E Γ Δ φ τ}{e e' : Exp Γ Δ φ}{e₀ : Exp Γ Δ τ} → e redex → e' redex → e₀ ≡ E [ e ] → e₀ ≡ E' [ e' ] → E == E' × e == e'
   unique-ctx p₁ p₂ exp-≡ exp-≡ = refl , refl
   unique-ctx =-redex () exp-≡ (=l-≡ exp-≡)
   unique-ctx =-redex () exp-≡ (=r-≡ exp-≡)
@@ -136,13 +136,13 @@ mutual
   ... | refl , refl = refl , refl
 
 mutual
-  unique-arg-ctx-hole : ∀{n}{Γ : Ctx n}{m}{Δ : FCtx m}{n'}{Γ' : Ctx n'}{φ φ'}{E : FunE Γ Δ Γ'}{E' : FunE Γ Δ Γ'}{e : Exp Γ Δ φ}{e' : Exp Γ Δ φ'}{args : ExpList Γ Δ Γ'} → e redex → e' redex → args ≡′ E [ e ] → args ≡′ E' [ e' ] → φ == φ'
+  unique-arg-ctx-hole : ∀{Γ Δ Γ' φ φ'}{E : FunE Γ Δ Γ'}{E' : FunE Γ Δ Γ'}{e : Exp Γ Δ φ}{e' : Exp Γ Δ φ'}{args : ExpList Γ Δ Γ'} → e redex → e' redex → args ≡′ E [ e ] → args ≡′ E' [ e' ] → φ == φ'
   unique-arg-ctx-hole p₁ p₂ (exp-≡′ q₁)    (exp-≡′ q₂) = unique-ctx-hole p₁ p₂ q₁ q₂
   unique-arg-ctx-hole () _  (exp-≡′ exp-≡) (val-≡′ _)
   unique-arg-ctx-hole _  () (val-≡′ _)     (exp-≡′ exp-≡)
   unique-arg-ctx-hole p₁ p₂ (val-≡′ q₁)    (val-≡′ q₂) = unique-arg-ctx-hole p₁ p₂ q₁ q₂
 
-  unique-ctx-hole : ∀{n}{Γ : Ctx n}{m}{Δ : FCtx m}{τ φ φ'}{E' : E Γ Δ φ' τ}{E : E Γ Δ φ τ}{e e'}{e₀ : Exp Γ Δ τ} → e redex → e' redex → e₀ ≡ E [ e ] → e₀ ≡ E' [ e' ] → φ == φ'
+  unique-ctx-hole : ∀{Γ Δ τ φ φ'}{E' : E Γ Δ φ' τ}{E : E Γ Δ φ τ}{e e'}{e₀ : Exp Γ Δ τ} → e redex → e' redex → e₀ ≡ E [ e ] → e₀ ≡ E' [ e' ] → φ == φ'
   unique-ctx-hole p₁      p₂ exp-≡ exp-≡     = refl
   unique-ctx-hole =-redex () exp-≡ (=l-≡ exp-≡)
   unique-ctx-hole =-redex () exp-≡ (=r-≡ exp-≡)
@@ -239,7 +239,7 @@ mutual
   unique-ctx-hole p₁ p₂ (,-≡ q₁) (,-≡ q₂) = unique-ctx-hole p₁ p₂ q₁ q₂
 
 mutual
-  arg-split : ∀{n}{Γ : Ctx n}{m}{Δ : FCtx m}{n'}{Γ' : Ctx n'} → (args : ExpList Γ Δ Γ') → (args values) ⊎ ∃ λ φ → ∃₂ λ FunE (e' : Exp Γ Δ φ) → args ≡′ FunE [ e' ] × e' redex
+  arg-split : ∀{Γ Δ Γ'} → (args : ExpList Γ Δ Γ') → (args values) ⊎ ∃ λ φ → ∃₂ λ FunE (e' : Exp Γ Δ φ) → args ≡′ FunE [ e' ] × e' redex
   arg-split [] = inj₁ []-values
   arg-split (x  ∷ args) with split x
   arg-split (._ ∷ args) | inj₁ (x , refl) with arg-split args
@@ -248,7 +248,7 @@ mutual
   arg-split (x  ∷ args) | inj₂ (α , β , γ , δ , ε) = inj₂ (α , exp β args , γ , exp-≡′ δ , ε)
 
 
-  split : ∀{n}{Γ : Ctx n}{m}{Δ : FCtx m}{τ} → (e : Exp Γ Δ τ) → (∃ λ v → e == (val v)) ⊎ ∃ λ φ → ∃₂ λ E (e' : Exp Γ Δ φ) → e ≡ E [ e' ] × e' redex
+  split : ∀{Γ Δ τ} → (e : Exp Γ Δ τ) → (∃ λ v → e == (val v)) ⊎ ∃ λ φ → ∃₂ λ E (e' : Exp Γ Δ φ) → e ≡ E [ e' ] × e' redex
   split (var x) = inj₂ (_ , □ , var x , exp-≡ , var-redex)
 
   split (val y) = inj₁ (y , refl)
