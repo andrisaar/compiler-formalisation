@@ -128,13 +128,9 @@ empty-concatr : ∀{m n}{A : Set} → (xs : Vec A m n) → xs ++ [] ≡ xs
 empty-concatr [] = refl
 empty-concatr (x ∷ xs) = cong (λ s → x ∷ s) (empty-concatr xs)
 
-append-concat : ∀{l m n}{A : Set}{x : A} → (xs : Vec A l m) → (ys : Vec A (suc m) n) → ys ++ (x ∷ xs) ≡ ys ∷ʳ x ++ xs
-append-concat xs [] = refl
-append-concat {x = x} xs (x₂ ∷ ys) = cong (λ s → x₂ ∷ s) (append-concat {x = x} xs ys)
-
-snoc-concat : ∀{n m}{x} → (S : Vec ℕ (suc n) m) → (T : Vec ℕ zero n) → S ∷ʳ x ++ T ≡ S ++ x ∷ T
-snoc-concat [] T = refl
-snoc-concat (x ∷ S) T = cong (λ S → x ∷ S) (snoc-concat S T)
+append-concat : ∀{l m n}{A : Set} → (x : A) → (xs : Vec A l m) → (ys : Vec A (suc m) n) → ys ++ (x ∷ xs) ≡ ys ∷ʳ x ++ xs
+append-concat _ _  [] = refl
+append-concat x xs (x₂ ∷ ys) = cong (λ s → x₂ ∷ s) (append-concat x xs ys)
 
 _&_[_]≔_ : ∀{m n}{A : Set} → Vec A zero n → Vec A n m → Fin m → A  → Vec A zero n × Vec A n m
 vec₁ & [] [ idx ]≔ val = vec₁ [ idx ]≔ val , []

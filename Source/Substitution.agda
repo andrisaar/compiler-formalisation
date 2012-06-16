@@ -11,9 +11,9 @@ wk : ∀{Φ Ψ τ} → Ren Φ Ψ → Ren (τ ∷ Φ) (τ ∷ Ψ)
 wk f (z ._) = z _
 wk f (s v) = s (f v)
 
-ren : ∀{Δ Γ Φ Ψ τ} → Ren Φ Ψ → Exp Δ Γ Φ τ → Exp Δ Γ Ψ τ
+ren : ∀{Δ Γ Φ Ψ T τ} → Ren Φ Ψ → Exp Δ Γ Φ T τ → Exp Δ Γ Ψ T τ
 
-ren-args : ∀{Δ Γ Φ Ψ Λ} → Ren Φ Ψ → ExpList Δ Γ Φ Λ → ExpList Δ Γ Ψ Λ
+ren-args : ∀{Δ Γ Φ Ψ T Λ} → Ren Φ Ψ → ExpList Δ Γ Φ T Λ  → ExpList Δ Γ Ψ T Λ
 ren-args f [] = []
 ren-args f (x ∷ el) = ren f x ∷ ren-args f el
 
@@ -39,16 +39,16 @@ ren f (receive tm tm₁ tm₂ tm₃) = receive (ren (wk f) tm) (ren (wk f) tm₁
 ren f (ignore tm) = ignore (ren f tm)
 ren f (Let tm tm₁) = Let (ren f tm) (ren (wk f) tm₁)
 
-Sub : FCtx → Ctx → CCtx → CCtx → Set
-Sub Δ Γ Φ Ψ = ∀{τ} → Const Φ τ → Exp Δ Γ Ψ τ
+Sub : FCtx → Ctx → TCtx → CCtx → CCtx → Set
+Sub Δ Γ T Φ Ψ = ∀{τ} → Const Φ τ → Exp Δ Γ Ψ T τ
 
-lift-sub : ∀{Δ Γ Φ Ψ σ} → Sub Δ Γ Φ Ψ → Sub Δ Γ (σ ∷ Φ) (σ ∷ Ψ)
+lift-sub : ∀{Δ Γ T Φ Ψ σ} → Sub Δ Γ T Φ Ψ → Sub Δ Γ T (σ ∷ Φ) (σ ∷ Ψ)
 lift-sub f (z ._) = const (z _)
 lift-sub f (s c) = ren s (f c)
 
-sub : ∀{Δ Γ Φ Ψ τ} → Sub Δ Γ Φ Ψ → Exp Δ Γ Φ τ → Exp Δ Γ Ψ τ
+sub : ∀{Δ Γ T Φ Ψ τ} → Sub Δ Γ T Φ Ψ → Exp Δ Γ Φ T τ → Exp Δ Γ Ψ T τ
 
-sub-args : ∀{Δ Γ Φ Ψ Λ} → Sub Δ Γ Φ Ψ → ExpList Δ Γ Φ Λ → ExpList Δ Γ Ψ Λ
+sub-args : ∀{Δ Γ T Φ Ψ Λ} → Sub Δ Γ T Φ Ψ → ExpList Δ Γ Φ T Λ → ExpList Δ Γ Ψ T Λ
 sub-args f [] = []
 sub-args f (x ∷ el) = sub f x ∷ sub-args f el
 
@@ -74,9 +74,9 @@ sub f (receive e e₁ e₂ e₃) = receive (sub (lift-sub f) e) (sub (lift-sub f
 sub f (ignore e) = ignore (sub f e)
 sub f (Let e e₁) = Let (sub f e) (sub (lift-sub f) e₁)
 
-_::_ : ∀{Δ Γ Φ Ψ τ} → Exp Δ Γ Ψ τ → Sub Δ Γ Φ Ψ → Sub Δ Γ (τ ∷ Φ) Ψ
+_::_ : ∀{Δ Γ T Φ Ψ τ} → Exp Δ Γ Ψ T τ → Sub Δ Γ T Φ Ψ → Sub Δ Γ T (τ ∷ Φ) Ψ
 (t :: f) (z ._) = t
 (t :: f) (s e) = f e
 
-subst-const : ∀{Δ Γ Ξ ξ τ} → Val ξ → Exp Δ Γ (ξ ∷ Ξ) τ → Exp Δ Γ Ξ τ
+subst-const : ∀{Δ Γ Ξ T ξ τ} → Val T ξ → Exp Δ Γ (ξ ∷ Ξ) T τ → Exp Δ Γ Ξ T τ
 subst-const v e = sub (val v :: const) e
