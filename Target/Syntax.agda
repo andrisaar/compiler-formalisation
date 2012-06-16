@@ -8,7 +8,7 @@ data Type : Set where
   
 data Flag : Set where
   ○ : Flag
-  ● : Type → Type → Flag
+  ● : Type → Type → Flag -- @cps[B, C] of Scala
 {-
 _◎_ : Flag → Flag → Flag
 ○ ◎ ○ = ○
